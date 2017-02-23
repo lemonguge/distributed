@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.homjie.distributed.mybatis.TaskInfoEntityMapper">
+
+	<resultMap id="BaseResultMap" type="cn.homjie.distributed.domain.TaskInfoEntity">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="description_id" jdbcType="VARCHAR" property="descriptionId" />
+		<result column="success" jdbcType="BIT" property="success" />
+		<result column="task_status" jdbcType="VARCHAR" property="taskStatus" />
+		<result column="result" jdbcType="LONGVARCHAR" property="result" />
+		<result column="ex" jdbcType="LONGVARCHAR" property="ex" />
+		<result column="stack_trace" jdbcType="LONGVARCHAR" property="stackTrace" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, description_id, success, task_status, result, ex, stack_trace
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from task_info
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from task_info
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert" parameterType="cn.homjie.distributed.domain.TaskInfoEntity">
+		insert into task_info (id, description_id, success,
+		task_status, result, ex,
+		stack_trace)
+		values (#{id,jdbcType=VARCHAR}, #{descriptionId,jdbcType=VARCHAR}, #{success,jdbcType=BIT},
+		#{taskStatus,jdbcType=VARCHAR}, #{result,jdbcType=LONGVARCHAR}, #{ex,jdbcType=LONGVARCHAR},
+		#{stackTrace,jdbcType=LONGVARCHAR})
+	</insert>
+
+	<insert id="insertSelective" parameterType="cn.homjie.distributed.domain.TaskInfoEntity">
+		insert into task_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="descriptionId != null">
+				description_id,
+			</if>
+			<if test="success != null">
+				success,
+			</if>
+			<if test="taskStatus != null">
+				task_status,
+			</if>
+			<if test="result != null">
+				result,
+			</if>
+			<if test="ex != null">
+				ex,
+			</if>
+			<if test="stackTrace != null">
+				stack_trace,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="descriptionId != null">
+				#{descriptionId,jdbcType=VARCHAR},
+			</if>
+			<if test="success != null">
+				#{success,jdbcType=BIT},
+			</if>
+			<if test="taskStatus != null">
+				#{taskStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="result != null">
+				#{result,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="ex != null">
+				#{ex,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="stackTrace != null">
+				#{stackTrace,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="cn.homjie.distributed.domain.TaskInfoEntity">
+		update task_info
+		<set>
+			<if test="descriptionId != null">
+				description_id = #{descriptionId,jdbcType=VARCHAR},
+			</if>
+			<if test="success != null">
+				success = #{success,jdbcType=BIT},
+			</if>
+			<if test="taskStatus != null">
+				task_status = #{taskStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="result != null">
+				result = #{result,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="ex != null">
+				ex = #{ex,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="stackTrace != null">
+				stack_trace = #{stackTrace,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="cn.homjie.distributed.domain.TaskInfoEntity">
+		update task_info
+		set description_id =
+		#{descriptionId,jdbcType=VARCHAR},
+		success = #{success,jdbcType=BIT},
+		task_status = #{taskStatus,jdbcType=VARCHAR},
+		result = #{result,jdbcType=LONGVARCHAR},
+		ex = #{ex,jdbcType=LONGVARCHAR},
+		stack_trace =
+		#{stackTrace,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.homjie.distributed.mybatis.DescriptionEntityMapper">
+
+	<resultMap id="BaseResultMap" type="cn.homjie.distributed.domain.DescriptionEntity">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="transaction_name" jdbcType="VARCHAR" property="transactionName" />
+		<result column="times" jdbcType="INTEGER" property="times" />
+		<result column="pid" jdbcType="VARCHAR" property="pid" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, transaction_name, times, pid
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from description
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from description
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert" parameterType="cn.homjie.distributed.domain.DescriptionEntity">
+		insert into description (id, transaction_name, times,
+		pid)
+		values
+		(#{id,jdbcType=VARCHAR}, #{transactionName,jdbcType=VARCHAR}, #{times,jdbcType=INTEGER},
+		#{pid,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="insertSelective" parameterType="cn.homjie.distributed.domain.DescriptionEntity">
+		insert into description
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="transactionName != null">
+				transaction_name,
+			</if>
+			<if test="times != null">
+				times,
+			</if>
+			<if test="pid != null">
+				pid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="transactionName != null">
+				#{transactionName,jdbcType=VARCHAR},
+			</if>
+			<if test="times != null">
+				#{times,jdbcType=INTEGER},
+			</if>
+			<if test="pid != null">
+				#{pid,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKeySelective" parameterType="cn.homjie.distributed.domain.DescriptionEntity">
+		update description
+		<set>
+			<if test="transactionName != null">
+				transaction_name = #{transactionName,jdbcType=VARCHAR},
+			</if>
+			<if test="times != null">
+				times = #{times,jdbcType=INTEGER},
+			</if>
+			<if test="pid != null">
+				pid = #{pid,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="cn.homjie.distributed.domain.DescriptionEntity">
+		update description
+		set transaction_name =
+		#{transactionName,jdbcType=VARCHAR},
+		times = #{times,jdbcType=INTEGER},
+		pid = #{pid,jdbcType=VARCHAR}
+		where id =
+		#{id,jdbcType=VARCHAR}
+	</update>
+
+</mapper>
