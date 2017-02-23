@@ -1,4 +1,4 @@
-package cn.homjie.distributed.exception;
+package cn.homjie.distributed.api.exception;
 
 public class RollbackSuccessException extends RuntimeException {
 

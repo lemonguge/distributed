@@ -3,8 +3,8 @@ package cn.homjie.boot.service;
 import java.util.List;
 
 import cn.homjie.boot.domain.City;
-import cn.homjie.distributed.Description;
-import cn.homjie.distributed.TaskResult;
+import cn.homjie.distributed.api.Description;
+import cn.homjie.distributed.api.TaskResult;
 
 public interface CityService {
 

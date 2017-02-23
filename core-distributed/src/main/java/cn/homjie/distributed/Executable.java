@@ -1,4 +1,4 @@
-package cn.homjie.distributed.execute;
+package cn.homjie.distributed;
 
 @FunctionalInterface
 public interface Executable<T> {

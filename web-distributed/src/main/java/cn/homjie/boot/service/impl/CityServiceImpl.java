@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import cn.homjie.boot.domain.City;
 import cn.homjie.boot.mapper.CityMapper;
 import cn.homjie.boot.service.CityService;
-import cn.homjie.distributed.Description;
 import cn.homjie.distributed.Distributed;
-import cn.homjie.distributed.TaskResult;
+import cn.homjie.distributed.api.Description;
+import cn.homjie.distributed.api.TaskResult;
 
 @Service
 public class CityServiceImpl implements CityService {

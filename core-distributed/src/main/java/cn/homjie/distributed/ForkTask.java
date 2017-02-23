@@ -1,8 +1,5 @@
 package cn.homjie.distributed;
 
-import cn.homjie.distributed.execute.Executable;
-import cn.homjie.distributed.execute.NulExecutable;
-
 public class ForkTask<T> {
 
 	private String taskName;

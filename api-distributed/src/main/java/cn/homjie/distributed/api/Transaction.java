@@ -1,4 +1,4 @@
-package cn.homjie.distributed;
+package cn.homjie.distributed.api;
 
 import java.util.List;
 
@@ -7,13 +7,17 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
+import cn.homjie.distributed.ForkTask;
+import cn.homjie.distributed.ForkTaskInfo;
+import cn.homjie.distributed.NulExecutable;
+import cn.homjie.distributed.TaskResult;
+import cn.homjie.distributed.TaskStatus;
+import cn.homjie.distributed.api.exception.DistributedException;
+import cn.homjie.distributed.api.exception.RollbackFailureException;
+import cn.homjie.distributed.api.exception.RollbackSuccessException;
+import cn.homjie.distributed.api.spring.SpringHolder;
 import cn.homjie.distributed.domain.TaskInfoEntity;
-import cn.homjie.distributed.exception.DistributedException;
-import cn.homjie.distributed.exception.RollbackFailureException;
-import cn.homjie.distributed.exception.RollbackSuccessException;
-import cn.homjie.distributed.execute.NulExecutable;
 import cn.homjie.distributed.rabbit.RabbitSender;
-import cn.homjie.distributed.spring.SpringHolder;
 
 public enum Transaction {
 

@@ -1,7 +1,6 @@
-package cn.homjie.distributed;
+package cn.homjie.distributed.api;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 public class ForkTaskInfo<T> implements Serializable {
 
@@ -14,10 +13,6 @@ public class ForkTaskInfo<T> implements Serializable {
 
 	private String taskStatus;
 	private String stackTrace;
-
-	public ForkTaskInfo() {
-		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-	}
 
 	public String getId() {
 		return id;
