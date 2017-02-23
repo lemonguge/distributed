@@ -1,6 +1,6 @@
 package cn.homjie.distributed;
 
-public enum Times {
+public enum Observer {
 	// 仅 Transaction.EVENTUAL 有效
 
 	// 有结果则使用，否则处理

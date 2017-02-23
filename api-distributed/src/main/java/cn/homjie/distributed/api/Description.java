@@ -5,10 +5,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import cn.homjie.distributed.api.spring.SpringHolder;
-import cn.homjie.distributed.domain.DescriptionEntity;
-import cn.homjie.distributed.rabbit.RabbitSender;
-
 /**
  * @Class Description
  * @Description 服务信息
@@ -87,19 +83,19 @@ public class Description implements Serializable {
 		return transaction;
 	}
 
-	private void send() {
-		RabbitSender<DescriptionEntity> descriptionSender = SpringHolder.getBean("descriptionSender");
-		DescriptionEntity entity = new DescriptionEntity();
-		entity.setId(id);
-		entity.setPid(pid);
-		entity.setTransactionName(transaction.name());
-		entity.setTimes(times);
-		try {
-			descriptionSender.send(entity);
-		} catch (Exception exp) {
-			exp.printStackTrace();
-		}
-	}
+//	private void send() {
+//		RabbitSender<DescriptionEntity> descriptionSender = SpringHolder.getBean("descriptionSender");
+//		DescriptionEntity entity = new DescriptionEntity();
+//		entity.setId(id);
+//		entity.setPid(pid);
+//		entity.setTransactionName(transaction.name());
+//		entity.setTimes(times);
+//		try {
+//			descriptionSender.send(entity);
+//		} catch (Exception exp) {
+//			exp.printStackTrace();
+//		}
+//	}
 
 
 }

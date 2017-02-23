@@ -1,7 +1,8 @@
 package cn.homjie.distributed;
 
+import static cn.homjie.distributed.Observer.ONCE;
+
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,28 +42,30 @@ public class Distributed {
 	}
 
 	public void execute(NulExecutable business) throws Exception {
-		execute(business, null, Times.ONCE);
+		execute(business, null, ONCE);
 	}
 
 	public void execute(NulExecutable business, String taskName) throws Exception {
-		execute(business, taskName, Times.ONCE);
+		execute(business, taskName, ONCE);
 	}
 
-	public void execute(NulExecutable business, String taskName, Times times) throws Exception {
-		submit((Executable<Void>) business, taskName, times);
+	public void execute(NulExecutable business, String taskName, Observer observer) throws Exception {
+		submit((Executable<Void>) business, taskName, observer);
 	}
 
 	public <T> TaskResult<T> submit(Executable<T> business) throws Exception {
-		return submit(business, null, Times.ONCE);
+		return submit(business, null, ONCE);
 	}
 
 	public <T> TaskResult<T> submit(Executable<T> business, String taskName) throws Exception {
-		return submit(business, taskName, Times.ONCE);
+		return submit(business, taskName, ONCE);
 	}
 
-	public <T> TaskResult<T> submit(Executable<T> business, String taskName, Times times) throws Exception {
+	public <T> TaskResult<T> submit(Executable<T> business, String taskName, Observer observer) throws Exception {
 		if (business == null)
 			throw new NullPointerException("任务为空");
+		if (observer == null)
+			throw new NullPointerException("观察为空");
 		ForkTask<T> task = new ForkTask<T>();
 		ForkTaskInfo<T> info = info();
 
@@ -73,8 +76,8 @@ public class Distributed {
 		task.setBusiness(business);
 
 		Transaction transaction = description.getTransaction();
-		TransactionExecutor<T> executor = TransactionFactory.create(transaction);
-		executor.submit(task, this);
+		TransactionExecutor<T> executor = TransactionFactory.create(transaction, observer);
+		executor.submit(task, info, this);
 
 		return info.getResult();
 	}
