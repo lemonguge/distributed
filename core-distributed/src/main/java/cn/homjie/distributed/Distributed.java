@@ -1,7 +1,5 @@
 package cn.homjie.distributed;
 
-import static cn.homjie.distributed.Observer.ONCE;
-
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +10,7 @@ import cn.homjie.distributed.api.Description;
 import cn.homjie.distributed.api.ForkTaskInfo;
 import cn.homjie.distributed.api.TaskResult;
 import cn.homjie.distributed.api.Transaction;
+import cn.homjie.distributed.api.exception.DistributedException;
 import cn.homjie.distributed.utils.IdGen;
 
 public class Distributed {
@@ -21,6 +20,9 @@ public class Distributed {
 	private boolean firstTime = false;
 	// 已执行的和当前任务
 	private List<ForkTask<?>> tasks = Lists.newArrayList();
+
+	// 事务执行器
+	private TransactionExecutor executor;
 
 	// 当前任务信息
 	private int pointInfos = 0;
@@ -39,33 +41,27 @@ public class Distributed {
 		description.incTimes();
 		if (firstTime)
 			description.setId(IdGen.uuid());
+
+		// 获得事务执行器
+		Transaction transaction = description.getTransaction();
+		executor = TransactionFactory.create(transaction);
 	}
 
-	public void execute(NulExecutable business) throws Exception {
-		execute(business, null, ONCE);
+	public void execute(NulExecutable business) throws DistributedException {
+		execute(business, null);
 	}
 
-	public void execute(NulExecutable business, String taskName) throws Exception {
-		execute(business, taskName, ONCE);
+	public void execute(NulExecutable business, String taskName) throws DistributedException {
+		submit((Executable<Void>) business, taskName);
 	}
 
-	public void execute(NulExecutable business, String taskName, Observer observer) throws Exception {
-		submit((Executable<Void>) business, taskName, observer);
+	public <T> TaskResult<T> submit(Executable<T> business) throws DistributedException {
+		return submit(business, null);
 	}
 
-	public <T> TaskResult<T> submit(Executable<T> business) throws Exception {
-		return submit(business, null, ONCE);
-	}
-
-	public <T> TaskResult<T> submit(Executable<T> business, String taskName) throws Exception {
-		return submit(business, taskName, ONCE);
-	}
-
-	public <T> TaskResult<T> submit(Executable<T> business, String taskName, Observer observer) throws Exception {
+	public <T> TaskResult<T> submit(Executable<T> business, String taskName) throws DistributedException {
 		if (business == null)
 			throw new NullPointerException("任务为空");
-		if (observer == null)
-			throw new NullPointerException("观察为空");
 		ForkTask<T> task = new ForkTask<T>();
 		ForkTaskInfo<T> info = info();
 
@@ -75,8 +71,6 @@ public class Distributed {
 			taskName = "任务" + tasks.size();
 		task.setBusiness(business);
 
-		Transaction transaction = description.getTransaction();
-		TransactionExecutor<T> executor = TransactionFactory.create(transaction, observer);
 		executor.submit(task, info, this);
 
 		return info.getResult();
@@ -107,7 +101,7 @@ public class Distributed {
 		return info;
 	}
 
-	public void rollback(NulExecutable rollback) throws Exception {
+	public void rollback(NulExecutable rollback) {
 		// 回滚设置
 		tasks.get(tasks.size() - 1).setRollback(rollback);
 	}

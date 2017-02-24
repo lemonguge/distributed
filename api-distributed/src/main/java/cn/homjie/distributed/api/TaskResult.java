@@ -1,5 +1,7 @@
 package cn.homjie.distributed.api;
 
+import static cn.homjie.distributed.api.exception.ExceptionType.EVENTUAL_EXCEPTION;
+
 import java.io.Serializable;
 
 import cn.homjie.distributed.api.exception.DistributedException;
@@ -10,29 +12,29 @@ public class TaskResult<T> implements Serializable {
 
 	private T result;
 
-	private Throwable ex;
+	private DistributedException ex;
 
-	private boolean success;
+	private boolean ok;
 
 	public TaskResult(T result) {
 		this.result = result;
-		this.success = true;
+		this.ok = true;
 	}
 
 	public TaskResult(Throwable ex) {
-		this.ex = ex;
-		this.success = false;
+		this.ex = new DistributedException(ex, EVENTUAL_EXCEPTION);
+		this.ok = false;
 	}
 
 	public boolean isOk() {
-		return success;
+		return ok;
 	}
 
 	public T get() {
-		if (success)
+		if (ok)
 			return result;
 		else
-			throw new DistributedException(ex);
+			throw ex;
 	}
 
 }

@@ -2,13 +2,22 @@ package cn.homjie.distributed;
 
 import cn.homjie.distributed.api.ForkTaskInfo;
 import cn.homjie.distributed.api.TaskResult;
+import cn.homjie.distributed.api.exception.DistributedException;
+import cn.homjie.distributed.api.exception.ExceptionType;
 
-public class DefaultExecutor<T> implements TransactionExecutor<T> {
+public class DefaultExecutor implements TransactionExecutor {
 
 	@Override
-	public void submit(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws Exception {
-		T result = task.getBusiness().handle();
-		info.setResult(new TaskResult<T>(result));
+	public <T> void submit(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
+		try {
+			T result = task.getBusiness().handle();
+			info.setResult(new TaskResult<T>(result));
+		} catch (DistributedException e) {
+			throw e;
+		} catch (Exception e) {
+			// 原始异常
+			throw new DistributedException(e, ExceptionType.DEFAULT_EXCEPTION);
+		}
 	}
 
 }

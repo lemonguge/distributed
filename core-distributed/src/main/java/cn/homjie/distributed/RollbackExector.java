@@ -6,13 +6,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import cn.homjie.distributed.api.ForkTaskInfo;
 import cn.homjie.distributed.api.TaskResult;
-import cn.homjie.distributed.api.exception.RollbackFailureException;
-import cn.homjie.distributed.api.exception.RollbackSuccessException;
+import cn.homjie.distributed.api.exception.DistributedException;
+import cn.homjie.distributed.api.exception.ExceptionType;
 
-public class RollbackExector<T> extends AbstractExector<T> {
+public class RollbackExector extends AbstractExector {
 
 	@Override
-	protected void first(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws Exception {
+	protected <T> void first(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
 		// 只有成功才有结果，否则抛出异常
 		if (info.getResult() != null)
 			return;
@@ -24,15 +24,17 @@ public class RollbackExector<T> extends AbstractExector<T> {
 			info.setTaskStatus(TaskStatus.SUCCESS.name());
 			// 执行成功，立即返回
 			return;
-		} catch (RollbackFailureException e) {
-			info.setTaskStatus(TaskStatus.ROLLBACK_FAILURE.name());
+		} catch (DistributedException e) {
+			// 回滚成功的几率更大，减少判断
+			if (e.isRollbackSuccess())
+				info.setTaskStatus(TaskStatus.ROLLBACK_SUCCESS.name());
+			else if (e.isRollbackFailure())
+				info.setTaskStatus(TaskStatus.ROLLBACK_FAILURE.name());
+
 			info.setStackTrace(ExceptionUtils.getStackTrace(e.getCause()));
 			ex = e;
-		} catch (RollbackSuccessException e) {
-			info.setTaskStatus(TaskStatus.ROLLBACK_SUCCESS.name());
-			info.setStackTrace(ExceptionUtils.getStackTrace(e.getCause()));
-			ex = e;
-		} catch (Exception e) { // 原始异常
+		} catch (Exception e) {
+			// 原始异常
 			info.setTaskStatus(TaskStatus.EXCEPTION.name());
 			info.setStackTrace(ExceptionUtils.getStackTrace(e));
 			ex = e;
@@ -40,7 +42,7 @@ public class RollbackExector<T> extends AbstractExector<T> {
 
 		sendEx(info, ex);
 
-		// 回滚是否出现异常
+		// 回滚是否出现过异常
 		boolean rollbackException = false;
 		List<ForkTask<?>> tasks = distributed.getTasks();
 		for (ForkTask<?> forktask : tasks) {
@@ -66,25 +68,28 @@ public class RollbackExector<T> extends AbstractExector<T> {
 				sendOk(info);
 			}
 		}
-		// 回滚失败的异常，仍然抛出回滚失败
-		if (ex instanceof RollbackFailureException) {
-			throw (RollbackFailureException) ex;
-		} else {
-			if (ex instanceof RollbackSuccessException) {
-				ex = ex.getCause();
-			}
-			if (rollbackException) {
-				throw new RollbackFailureException(ex);
-			} else
-				throw new RollbackSuccessException(ex);
-		}
 
+		if (ex instanceof DistributedException) {
+			if (rollbackException)
+				// 回滚失败，获取原始异常
+				ex = ex.getCause();
+			else
+				throw (DistributedException) ex;
+		}
+		if (rollbackException)
+			throw new DistributedException(ex, ExceptionType.ROLLBACK_FAILURE);
+		else
+			throw new DistributedException(ex, ExceptionType.ROLLBACK_SUCCESS);
 	}
 
 	@Override
-	protected void retry(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws Exception {
+	protected <T> void retry(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
 		if (TaskStatus.ROLLBACK_FAILURE.name().equals(info.getTaskStatus())) {
-			task.getBusiness().handle();
+			try {
+				task.getBusiness().handle();
+			} catch (Exception e) {
+
+			}
 		} else if (TaskStatus.ROLLBACK_EXCEPTION.name().equals(info.getTaskStatus())) {
 			try {
 				task.getRollback().handleWithoutResult();

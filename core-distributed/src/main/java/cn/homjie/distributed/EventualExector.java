@@ -1,29 +1,15 @@
 package cn.homjie.distributed;
 
-import java.util.List;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import com.google.common.collect.Lists;
 
 import cn.homjie.distributed.api.ForkTaskInfo;
 import cn.homjie.distributed.api.TaskResult;
 import cn.homjie.distributed.api.exception.DistributedException;
 
-public class EventualExector<T> extends AbstractExector<T> {
-
-	// EVENTUAL_FAILURE 进行重试分析后会将 SUCCESS 修改
-	private static final List<String> RETRY_STATUS = Lists.newArrayList(TaskStatus.EVENTUAL_FAILURE.name(), TaskStatus.EVENTUAL_EXCEPTION.name(),
-			TaskStatus.EVENTUAL_IGNORE.name());
-
-	private Observer observer;
-
-	public EventualExector(Observer observer) {
-		this.observer = observer;
-	}
+public class EventualExector extends AbstractExector {
 
 	@Override
-	protected void first(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws Exception {
+	protected <T> void first(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
 		// 只有状态不为空才有结果
 		if (info.getTaskStatus() != null)
 			return;
@@ -31,14 +17,14 @@ public class EventualExector<T> extends AbstractExector<T> {
 	}
 
 	@Override
-	protected void retry(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws Exception {
+	protected <T> void retry(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
 		String taskStatus = info.getTaskStatus();
-		if (RETRY_STATUS.contains(taskStatus)) {
+		if (!TaskStatus.SUCCESS.name().equals(taskStatus)) {
 			exec(task, info);
 		}
 	}
 
-	private void exec(ForkTask<T> task, ForkTaskInfo<T> info) {
+	private <T> void exec(ForkTask<T> task, ForkTaskInfo<T> info) {
 		try {
 			T result = task.getBusiness().handle();
 			info.setResult(new TaskResult<T>(result));

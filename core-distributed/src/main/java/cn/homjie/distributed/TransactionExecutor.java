@@ -1,9 +1,10 @@
 package cn.homjie.distributed;
 
 import cn.homjie.distributed.api.ForkTaskInfo;
+import cn.homjie.distributed.api.exception.DistributedException;
 
-public interface TransactionExecutor<T> {
+public interface TransactionExecutor {
 
-	public void submit(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws Exception;
+	public <T> void submit(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException;
 
 }
