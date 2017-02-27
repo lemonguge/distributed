@@ -5,6 +5,8 @@ import static cn.homjie.distributed.api.exception.ExceptionType.EVENTUAL_EXCEPTI
 import static cn.homjie.distributed.api.exception.ExceptionType.ROLLBACK_FAILURE;
 import static cn.homjie.distributed.api.exception.ExceptionType.ROLLBACK_SUCCESS;
 
+import cn.homjie.distributed.api.exception.ExceptionType;
+
 public class DistributedException extends RuntimeException {
 
 	private static final long serialVersionUID = 3026319152089291579L;

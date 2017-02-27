@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import cn.homjie.distributed.api.exception.ExceptionType;
+
 import cn.homjie.distributed.api.ForkTaskInfo;
 import cn.homjie.distributed.api.TaskResult;
 import cn.homjie.distributed.api.exception.DistributedException;
-import cn.homjie.distributed.api.exception.ExceptionType;
 
 public class RollbackExector extends AbstractExector {
 
