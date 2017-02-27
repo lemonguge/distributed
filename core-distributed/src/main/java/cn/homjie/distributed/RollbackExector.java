@@ -12,7 +12,7 @@ import cn.homjie.distributed.api.exception.ExceptionType;
 public class RollbackExector extends AbstractExector {
 
 	@Override
-	protected <T> void first(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
+	protected <T> void first(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException {
 		// 只有成功才有结果，否则抛出异常
 		if (info.getResult() != null)
 			return;
@@ -20,7 +20,7 @@ public class RollbackExector extends AbstractExector {
 		Throwable ex = null;
 		try {
 			T result = task.getBusiness().handle();
-			info.setResult(new TaskResult<T>(result));
+			info.setResult(TaskResult.ok(result));
 			info.setTaskStatus(TaskStatus.SUCCESS.name());
 			// 执行成功，立即返回
 			return;
@@ -83,7 +83,7 @@ public class RollbackExector extends AbstractExector {
 	}
 
 	@Override
-	protected <T> void retry(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
+	protected <T> void retry(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException {
 		if (TaskStatus.ROLLBACK_FAILURE.name().equals(info.getTaskStatus())) {
 			try {
 				task.getBusiness().handle();

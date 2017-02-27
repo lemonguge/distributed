@@ -2,14 +2,14 @@ package cn.homjie.distributed.api;
 
 import java.io.Serializable;
 
-public class ForkTaskInfo<T> implements Serializable {
+public class ForkTaskInfo implements Serializable {
 
 	private static final long serialVersionUID = -5228081734361376651L;
 
 	private String id;
 	private String descriptionId;
 
-	private TaskResult<T> result;
+	private TaskResult result;
 
 	private String taskStatus;
 	private String stackTrace;
@@ -30,11 +30,11 @@ public class ForkTaskInfo<T> implements Serializable {
 		this.descriptionId = descriptionId;
 	}
 
-	public TaskResult<T> getResult() {
+	public TaskResult getResult() {
 		return result;
 	}
 
-	public void setResult(TaskResult<T> result) {
+	public void setResult(TaskResult result) {
 		this.result = result;
 	}
 

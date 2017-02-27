@@ -27,7 +27,7 @@ public class Description implements Serializable {
 	private int times = 0;
 
 	// 所有任务信息
-	private List<ForkTaskInfo<?>> infos = Lists.newArrayList();
+	private List<ForkTaskInfo> infos = Lists.newArrayList();
 	// 所有子服务信息
 	private List<Description> children = Lists.newArrayList();
 
@@ -63,11 +63,11 @@ public class Description implements Serializable {
 		this.times = times;
 	}
 
-	public List<ForkTaskInfo<?>> getInfos() {
+	public List<ForkTaskInfo> getInfos() {
 		return infos;
 	}
 
-	public void setInfos(List<ForkTaskInfo<?>> infos) {
+	public void setInfos(List<ForkTaskInfo> infos) {
 		this.infos = infos;
 	}
 

@@ -8,10 +8,10 @@ import cn.homjie.distributed.api.exception.ExceptionType;
 public class DefaultExecutor implements TransactionExecutor {
 
 	@Override
-	public <T> void submit(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
+	public <T> void submit(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException {
 		try {
 			T result = task.getBusiness().handle();
-			info.setResult(new TaskResult<T>(result));
+			info.setResult(TaskResult.ok(result));
 		} catch (DistributedException e) {
 			throw e;
 		} catch (Exception e) {

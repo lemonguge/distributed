@@ -9,7 +9,7 @@ import cn.homjie.distributed.api.exception.DistributedException;
 public class EventualExector extends AbstractExector {
 
 	@Override
-	protected <T> void first(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
+	protected <T> void first(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException {
 		// 只有状态不为空才有结果
 		if (info.getTaskStatus() != null)
 			return;
@@ -17,27 +17,27 @@ public class EventualExector extends AbstractExector {
 	}
 
 	@Override
-	protected <T> void retry(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
+	protected <T> void retry(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException {
 		String taskStatus = info.getTaskStatus();
 		if (!TaskStatus.SUCCESS.name().equals(taskStatus)) {
 			exec(task, info);
 		}
 	}
 
-	private <T> void exec(ForkTask<T> task, ForkTaskInfo<T> info) {
+	private <T> void exec(ForkTask<T> task, ForkTaskInfo info) {
 		try {
 			T result = task.getBusiness().handle();
-			info.setResult(new TaskResult<T>(result));
+			info.setResult(TaskResult.ok(result));
 			info.setTaskStatus(TaskStatus.SUCCESS.name());
 
 			sendOk(info, result);
 		} catch (DistributedException e) {
-			info.setResult(new TaskResult<T>(e.getCause()));
+			info.setResult(TaskResult.ex(e.getCause()));
 			info.setTaskStatus(TaskStatus.EVENTUAL_IGNORE.name());
 
 			sendEx(info, e);
 		} catch (Exception e) {
-			info.setResult(new TaskResult<T>(e));
+			info.setResult(TaskResult.ex(e));
 			info.setTaskStatus(TaskStatus.EVENTUAL_EXCEPTION.name());
 			info.setStackTrace(ExceptionUtils.getStackTrace(e));
 

@@ -55,15 +55,15 @@ public class Distributed {
 		submit((Executable<Void>) business, taskName);
 	}
 
-	public <T> TaskResult<T> submit(Executable<T> business) throws DistributedException {
+	public <T> TaskResult submit(Executable<T> business) throws DistributedException {
 		return submit(business, null);
 	}
 
-	public <T> TaskResult<T> submit(Executable<T> business, String taskName) throws DistributedException {
+	public <T> TaskResult submit(Executable<T> business, String taskName) throws DistributedException {
 		if (business == null)
 			throw new NullPointerException("任务为空");
 		ForkTask<T> task = new ForkTask<T>();
-		ForkTaskInfo<T> info = info();
+		ForkTaskInfo info = info();
 
 		tasks.add(task);
 
@@ -76,26 +76,25 @@ public class Distributed {
 		return info.getResult();
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> ForkTaskInfo<T> info() {
+	private ForkTaskInfo info() {
 		if (firstTime) {
-			ForkTaskInfo<T> info = addInfo();
+			ForkTaskInfo info = addInfo();
 			return info;
 		} else {
-			List<ForkTaskInfo<?>> infos = description.getInfos();
+			List<ForkTaskInfo> infos = description.getInfos();
 			int size = infos.size();
 			int point = pointInfos;
 
 			pointInfos++;
 
 			if (point < size)
-				return (ForkTaskInfo<T>) infos.get(point);
+				return infos.get(point);
 			return addInfo();
 		}
 	}
 
-	private <T> ForkTaskInfo<T> addInfo() {
-		ForkTaskInfo<T> info = new ForkTaskInfo<T>();
+	private ForkTaskInfo addInfo() {
+		ForkTaskInfo info = new ForkTaskInfo();
 		info.setDescriptionId(description.getId());
 		description.getInfos().add(info);
 		return info;
@@ -106,7 +105,7 @@ public class Distributed {
 		tasks.get(tasks.size() - 1).setRollback(rollback);
 	}
 
-	public Description description() {
+	public Description childInvoke() {
 		if (firstTime) {
 			Description child = addDesc();
 			return child;

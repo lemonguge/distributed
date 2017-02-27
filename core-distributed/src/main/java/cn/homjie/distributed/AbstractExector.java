@@ -18,18 +18,18 @@ public abstract class AbstractExector implements TransactionExecutor {
 	protected static Gson gson = new Gson();
 
 	@Override
-	public <T> void submit(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException {
+	public <T> void submit(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException {
 		if (distributed.isFirstTime())
 			first(task, info, distributed);
 		else
 			retry(task, info, distributed);
 	}
 
-	protected abstract <T> void first(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException;
+	protected abstract <T> void first(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException;
 
-	protected abstract <T> void retry(ForkTask<T> task, ForkTaskInfo<T> info, Distributed distributed) throws DistributedException;
+	protected abstract <T> void retry(ForkTask<T> task, ForkTaskInfo info, Distributed distributed) throws DistributedException;
 
-	protected void sendEx(ForkTaskInfo<?> info, Throwable e) {
+	protected void sendEx(ForkTaskInfo info, Throwable e) {
 		RabbitSender<TaskInfoEntity> taskInfoSender = SpringHolder.getBean("taskInfoSender");
 		TaskInfoEntity entity = new TaskInfoEntity();
 		entity.setId(info.getId());
@@ -45,7 +45,7 @@ public abstract class AbstractExector implements TransactionExecutor {
 		}
 	}
 
-	protected void sendOk(ForkTaskInfo<?> info, Object result) {
+	protected void sendOk(ForkTaskInfo info, Object result) {
 		RabbitSender<TaskInfoEntity> taskInfoSender = SpringHolder.getBean("taskInfoSender");
 		TaskInfoEntity entity = new TaskInfoEntity();
 		entity.setId(info.getId());
@@ -61,7 +61,7 @@ public abstract class AbstractExector implements TransactionExecutor {
 		}
 	}
 
-	protected void sendOk(ForkTaskInfo<?> info) {
+	protected void sendOk(ForkTaskInfo info) {
 		RabbitSender<TaskInfoEntity> taskInfoSender = SpringHolder.getBean("taskInfoSender");
 		TaskInfoEntity entity = new TaskInfoEntity();
 		entity.setId(info.getId());
